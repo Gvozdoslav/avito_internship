@@ -1,6 +1,8 @@
 package entity
 
 type Transaction struct {
-	id     int
-	amount float64
+	id     int     `json:"id"`
+	amount float64 `json:"amount"`
+	from   Account `json:"from"`
+	to     Account `json:"to"`
 }
