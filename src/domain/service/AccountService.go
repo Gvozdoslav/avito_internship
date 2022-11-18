@@ -15,6 +15,57 @@ func NewAccountService(accountRepository *repository.AccountRepository) *Account
 	}
 }
 
+func (a *AccountService) BookForService(sendId int, recId int, amount float64) error {
+
+	sender, err := a.GetAccount(sendId)
+	if err != nil || sender == nil {
+		return err
+	}
+
+	receiver, err := a.GetAccount(recId)
+	if err != nil || receiver == nil {
+		return err
+	}
+
+	if sender.Balance < amount {
+		return err
+	}
+
+	return nil
+}
+
+func (a *AccountService) PayForService(sendId int, recId int, amount float64) error {
+
+	sender, err := a.GetAccount(sendId)
+	if err != nil || sender == nil {
+		return err
+	}
+
+	receiver, err := a.GetAccount(recId)
+	if err != nil || receiver == nil {
+		return err
+	}
+
+	if sender.Balance < amount {
+		return err
+	}
+
+	sender.Balance -= amount
+	receiver.Balance += amount
+
+	_, err = a.UpdateAccount(sendId, sender)
+	if err != nil {
+		return err
+	}
+
+	_, err = a.UpdateAccount(recId, receiver)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (a *AccountService) GetAccount(id int) (*dto.AccountDto, error) {
 
 	account, err := a.accountRepository.GetById(id)

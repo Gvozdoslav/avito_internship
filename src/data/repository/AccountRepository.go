@@ -23,10 +23,10 @@ func NewAccountRepository(db *sqlx.DB) *AccountRepository {
 func (a *AccountRepository) GetById(id int) (*entity.Account, error) {
 
 	account := new(entity.Account)
-	getUserQuery :=
+	getAccountQuery :=
 		fmt.Sprintf("select * from %s as accs where accs.id = $1", accountsTable)
 
-	err := a.DB.Get(account, getUserQuery, id)
+	err := a.DB.Get(account, getAccountQuery, id)
 	return account, err
 }
 

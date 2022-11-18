@@ -16,6 +16,8 @@ create table if not exists accounts
 create table if not exists transactions
 (
     Id serial primary key,
+    amount int not null,
+    service_id int not null,
     from_id int not null,
     to_id int not null,
     status varchar not null default 'reserved'

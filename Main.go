@@ -22,7 +22,10 @@ func main() {
 
 	userService := *service.NewUserService(userRepository, accountRepository, transactionRepository)
 	accountService := *service.NewAccountService(accountRepository)
-	handler := handler2.NewHandler(&userService, &accountService)
+	transactionService := *service.NewTransactionService(transactionRepository)
+
+	handler := handler2.NewHandler(&userService, &accountService, &transactionService)
+
 	srv := new(server2.Server)
 	if err := srv.Run("8081", handler.InitRoutes()); err != nil {
 		log.Fatalf("error occured while running server: %s", err.Error())

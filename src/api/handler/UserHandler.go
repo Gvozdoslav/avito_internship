@@ -10,13 +10,9 @@ import (
 	"strconv"
 )
 
-const (
-	userContext = "id"
-)
-
 func (handler *Handler) getUser(context *gin.Context) {
 
-	userId, err := getUserId(context)
+	userId, err := getUserIdFromContext(context)
 	if err != nil {
 		response.NewErrorResponse(context, http.StatusInternalServerError, err.Error())
 		return
@@ -65,7 +61,7 @@ func (handler *Handler) createUser(context *gin.Context) {
 
 func (handler *Handler) updateUser(context *gin.Context) {
 
-	userId, err := getUserId(context)
+	userId, err := getUserIdFromContext(context)
 	if err != nil {
 		response.NewErrorResponse(context, http.StatusBadRequest, err.Error())
 		return
@@ -92,13 +88,59 @@ func (handler *Handler) updateUser(context *gin.Context) {
 	})
 }
 
+func (handler *Handler) bookService(context *gin.Context) {
+
+	input := new(dto.TransactionDto)
+	if err := context.BindJSON(input); err != nil {
+		response.NewErrorResponse(context, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	responseTransactionDto, err := handler.transactionService.BookForService(input)
+	if err != nil {
+		response.NewErrorResponse(context, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = handler.accountService.BookForService(input.FromId, input.ToId, input.Amount)
+	if err != nil {
+		response.NewErrorResponse(context, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusCreated, map[string]interface{}{
+		"Message": "Transaction with id " + strconv.Itoa(responseTransactionDto.Id) + " has been booked successfully",
+	})
+}
+
 func (handler *Handler) payForService(context *gin.Context) {
 
+	input := new(dto.TransactionDto)
+	if err := context.BindJSON(input); err != nil {
+		response.NewErrorResponse(context, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	responseTransactionDto, err := handler.transactionService.PayForService(input)
+	if err != nil {
+		response.NewErrorResponse(context, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = handler.accountService.PayForService(input.FromId, input.ToId, input.Amount)
+	if err != nil {
+		response.NewErrorResponse(context, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusCreated, map[string]interface{}{
+		"Message": "Transaction with id " + strconv.Itoa(responseTransactionDto.Id) + " has been payed successfully",
+	})
 }
 
 func (handler *Handler) deleteUser(context *gin.Context) {
 
-	userId, err := getUserId(context)
+	userId, err := getUserIdFromContext(context)
 	if err != nil {
 		response.NewErrorResponse(context, http.StatusBadRequest, err.Error())
 		return
@@ -114,16 +156,16 @@ func (handler *Handler) deleteUser(context *gin.Context) {
 	})
 }
 
-func getUserId(c *gin.Context) (int, error) {
+func getUserIdFromContext(c *gin.Context) (int, error) {
 
-	id := c.Param(userContext)
+	id := c.Param(userIdContext)
 	if id == "" {
-		return 0, errors.New("user id not found")
+		return 0, errors.New("entity id not found")
 	}
 
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
-		return 0, errors.New("user id is of invalid type")
+		return 0, errors.New("entity id is of invalid type")
 	}
 
 	return idInt, nil
