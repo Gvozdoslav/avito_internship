@@ -23,7 +23,7 @@ func NewPostgresDb(cfg *Config) (*sqlx.DB, error) {
 		cfg = new(Config)
 		{
 			cfg.Host = "localhost"
-			cfg.Port = "5434"
+			cfg.Port = "5432"
 			cfg.Username = "postgres"
 			cfg.Password = "1qaz2wsx"
 			cfg.DbName = "avitodb"
