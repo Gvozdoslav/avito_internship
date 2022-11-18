@@ -43,6 +43,6 @@ func NewPostgresDb(cfg *Config) (*sqlx.DB, error) {
 		return nil, err
 	}
 
-	log.Println("db connected successfully")
+	log.Println("DB connected successfully")
 	return db, nil
 }

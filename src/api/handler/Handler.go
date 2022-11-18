@@ -6,12 +6,14 @@ import (
 )
 
 type Handler struct {
-	service *service.UserServiceInterface
+	userService    *service.UserService
+	accountService *service.AccountService
 }
 
-func NewHandler(service *service.UserServiceInterface) *Handler {
+func NewHandler(userService *service.UserService, accountService *service.AccountService) *Handler {
 	return &Handler{
-		service: service,
+		userService:    userService,
+		accountService: accountService,
 	}
 }
 
@@ -26,6 +28,7 @@ func (handler *Handler) InitRoutes() *gin.Engine {
 			user.GET("/:id", handler.getUser)
 			user.POST("/", handler.createUser)
 			user.PUT("/:id", handler.updateUser)
+			user.PUT("/pay/:id", handler.payForService)
 			user.DELETE("/:id", handler.deleteUser)
 
 			account := user.Group(":id/account")

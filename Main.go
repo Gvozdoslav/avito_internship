@@ -20,10 +20,11 @@ func main() {
 	transactionRepository := repository.NewTransactionRepository(db)
 	userRepository := repository.NewUserRepository(db)
 
-	userService := service.UserServiceInterface(*service.NewUserService(userRepository, accountRepository, transactionRepository))
-	handler := handler2.NewHandler(&userService)
+	userService := *service.NewUserService(userRepository, accountRepository, transactionRepository)
+	accountService := *service.NewAccountService(accountRepository)
+	handler := handler2.NewHandler(&userService, &accountService)
 	srv := new(server2.Server)
-	if err := srv.Run("8080", handler.InitRoutes()); err != nil {
+	if err := srv.Run("8081", handler.InitRoutes()); err != nil {
 		log.Fatalf("error occured while running server: %s", err.Error())
 	}
 }

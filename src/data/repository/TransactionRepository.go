@@ -5,6 +5,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+const (
+	transactionsTable = "transactions"
+)
+
 type TransactionRepository struct {
 	DB *sqlx.DB
 }
