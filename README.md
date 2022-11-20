@@ -30,6 +30,11 @@ func (u *UserService) DeleteUser(id int) (bool, error)
 
 func (a *AccountService) Delete(id int) (bool, error)
 
+### 5. Business logic
+func (handler *Handler) bookService(context *gin.Context)
+
+func (handler *Handler) payForService(context *gin.Context)
+
 
 ![Requests](src/images/Requests.png)
 
